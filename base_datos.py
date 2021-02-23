@@ -1,21 +1,22 @@
-import mysql.connector
+#from peewee import *
+from peewee import SqliteDatabase, Model, CharField, DateTimeField,TextField, BooleanField
+from datetime import datetime as dt
 
-# ###########################################
-def crearbd():
-    try:
-        mibase = mysql.connector.connect(host="localhost", user="root", passwd="" )
-        micursor = mibase.cursor()
-        micursor.execute("CREATE DATABASE baseprueba3")
-        mibase = mysql.connector.connect(host="localhost", user="root",passwd="",database="baseprueba3")
-        micursor = mibase.cursor()
-        micursor.execute("CREATE TABLE producto( id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, titulo VARCHAR(128) COLLATE utf8_spanish2_ci NOT NULL, descripcion text COLLATE utf8_spanish2_ci NOT NULL )")
-        print("Base de datos con tabla creada")
-        showinfo('-', 'Base de datos con tabla creada')
-    except:
-        print("Ya existe la base de datos")
-        showinfo('-', 'Ya existe la base de datos')
+db = SqliteDatabase('nivel_avanzado.db')
 
-def miconexion():
-        
-    mibase = mysql.connector.connect(host="localhost", user="root", passwd="", database="baseprueba3")
-    return mibase
+class BaseModel(Model):
+    class Meta:
+        database = db
+
+class Noticia(BaseModel):
+    titulo = CharField(unique = True)
+    fecha = DateTimeField(default = dt.now)
+    descripcion = TextField()
+    estado_de_publicacion = BooleanField(default = True)
+    
+    def __str__(self,):
+        return "El título es: " + str(self.titulo)
+         
+db.connect()
+db.create_tables([Noticia])
+db.close()
